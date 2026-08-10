@@ -1,37 +1,21 @@
 import math
+import csv
 print("This is TravelFest")
+airports = {}
+with open("airports.csv", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
 
-while True:
-    departure = input("Enter departure airport: ").upper()
-    arrival = input("Enter arrival airport: ").upper()
-    airports = {
-        "JFK": {
-            "name": "John F. Kennedy International Airport",
-            "lat": 40.6413,
-            "lon": -73.7781
-        },
-        "LAX": {
-            "name": "Los Angeles International Airport",
-            "lat": 33.9416,
-            "lon": -118.4085
-        },
-        "EWR": {
-            "name": "Newark Liberty International Airport",
-            "lat": 40.6895,
-            "lon": -74.1745
-        },
-        "GRU": {
-            "name": "São Paulo/Guarulhos International Airport",
-            "lat": -23.4356,
-            "lon": -46.4731
-        },
-        "GIG": {
-            "name": "Rio de Janeiro/Galeão International Airport",
-            "lat": -22.8090,
-            "lon": -43.2506
-        }
-    }
-    def calculate_distance(lat1, lon1, lat2, lon2):
+        for row in reader:
+            code = row["iata_code"]
+
+            if code:
+                airports[code] = {
+                    "name": row["name"],
+                    "lat": float(row["latitude_deg"]),
+                    "lon": float(row["longitude_deg"])
+                }
+                
+def calculate_distance(lat1, lon1, lat2, lon2):
         radius = 3958.8
 
         lat1 = math.radians(lat1)
@@ -52,6 +36,10 @@ while True:
         c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
         return radius * c
+while True:
+    departure = input("Enter departure airport: ").upper()
+    arrival = input("Enter arrival airport: ").upper()
+
     if len(departure) != 3 or not departure.isalpha():
         print("Invalid departure airport code.")
     elif len(arrival) != 3 or not arrival.isalpha():
