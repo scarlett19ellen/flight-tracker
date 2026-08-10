@@ -1,5 +1,5 @@
 # flight-tracker
-A python flight search and price pplication for finding affordable flights.
+A python flight search and price application for finding affordable flights.
 
 ** Current features **
 1. Search departure and arrival airport
