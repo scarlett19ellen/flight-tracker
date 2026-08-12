@@ -14,7 +14,7 @@ with open("airports.csv", encoding="utf-8") as file:
                     "lat": float(row["latitude_deg"]),
                     "lon": float(row["longitude_deg"])
                 }
-                
+
 def calculate_distance(lat1, lon1, lat2, lon2):
         radius = 3958.8
 
@@ -52,7 +52,7 @@ while True:
         print()
         print("Your flight route: ")
         print(departure, "-", airports[departure]["name"])
-        print("→")
+        print("->")
         print(arrival, "-", airports[arrival]["name"])
         distance = calculate_distance(
         airports[departure]["lat"],
@@ -71,5 +71,5 @@ while True:
 
     again = input("Would you like to search another flight? (yes/no): ").lower()
     if again != "yes":
-        print("Thanks for using FlightFest")
+        print("Thanks for using TravelFest")
         break
