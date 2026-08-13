@@ -6,6 +6,9 @@ load_dotenv()
 
 token = os.getenv("DUFFEL_ACCESS_TOKEN")
 
+#=====================
+# Duffel flight search
+#=====================
 
 def search_flights(
     origin,

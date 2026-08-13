@@ -17,7 +17,12 @@ with open("airports.csv", encoding="utf-8") as file:
                     "lon": float(row["longitude_deg"])
                 }
 
+# =====================
+# Helper Functions 
+#======================
+
 def calculate_distance(lat1, lon1, lat2, lon2):
+    # Calculate the distance between two airports in miles.
         radius = 3958.8
 
         lat1 = math.radians(lat1)
@@ -40,6 +45,7 @@ def calculate_distance(lat1, lon1, lat2, lon2):
         return radius * c
         
 def format_duration(duration):
+    # Function to return correct hour format
     duration = duration.replace("PT", "")
 
     hours = 0
@@ -55,6 +61,7 @@ def format_duration(duration):
     return f"{hours}h {minutes}m"
 
 def get_valid_date(prompt, after_date=None):
+    # Only valid dates be inserted as input
     while True:
         date_text = input(prompt)
 
@@ -77,6 +84,10 @@ def get_valid_date(prompt, after_date=None):
             continue
 
         return date_text, entered_date
+
+#=====================
+# Main Flight Search
+#=====================
 
 while True:
     departure = input("Enter departure airport: ").upper()
