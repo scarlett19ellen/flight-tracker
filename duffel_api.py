@@ -7,7 +7,14 @@ load_dotenv()
 token = os.getenv("DUFFEL_ACCESS_TOKEN")
 
 
-def search_flights(origin, destination, departure_date):
+def search_flights(
+    origin,
+    destination,
+    departure_date,
+    return_date=None,
+    passenger_count=1,
+    cabin_class="economy"
+):
     url = "https://api.duffel.com/air/offer_requests"
 
     headers = {
@@ -17,21 +24,31 @@ def search_flights(origin, destination, departure_date):
         "Content-Type": "application/json"
     }
 
+    slices = [
+        {
+            "origin": origin,
+            "destination": destination,
+            "departure_date": departure_date
+        }
+    ]
+
+    if return_date:
+        slices.append(
+            {
+                "origin": destination,
+                "destination": origin,
+                "departure_date": return_date
+            }
+        )
+
     data = {
         "data": {
-            "slices": [
-                {
-                    "origin": origin,
-                    "destination": destination,
-                    "departure_date": departure_date
-                }
-            ],
+            "slices": slices,
             "passengers": [
-                {
-                    "type": "adult"
-                }
+                {"type": "adult"}
+                for _ in range(passenger_count)
             ],
-            "cabin_class": "economy"
+            "cabin_class": cabin_class
         }
     }
 

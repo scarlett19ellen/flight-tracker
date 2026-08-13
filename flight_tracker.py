@@ -78,70 +78,91 @@ while True:
         airports[arrival]["lon"],
         )
     print("Distance:", round(distance), "miles"),
+    trip_type = input("One-way or round trip? (one-way/round): ").lower()
     departure_date = input("Enter departure date (YYYY-MM-DD): ")
-    offers = search_flights(
-            departure,
-            arrival,
-            departure_date
-            )
-        
-    if offers:
-        cheapest_offers = sorted(
-        offers,
-        key=lambda offer: float(offer["total_amount"])
-        )[:5]
+    return_date = None
 
-        print()
-        print("Top 5 cheapest flights:")
+    passenger_count = int(input("How many passengers? "))
 
-        for number, offer in enumerate(cheapest_offers, start=1):
-            flight_slice = offer["slices"][0]
-            segments = flight_slice["segments"]
-            first_segment = segments[0]
-            last_segment = segments[-1]
-            departure_time = first_segment["departing_at"].split("T")[1][:5]
-            arrival_time = last_segment["arriving_at"].split("T")[1][:5]
-            connections = len(segments) - 1
+    cabin_class = input(
+        "Cabin class (economy/premium_economy/business/first): "
+    ).lower()
 
-            if connections == 0:
-                stops = "Nonstop"
-            elif connections == 1:
-                stops = "1 stop"
-            else:
-                stops = f"{connections} stops"
-
-            duration = format_duration(flight_slice["duration"])
-
-            carriers = []
-
-            for segment in segments:
-                carrier = segment["operating_carrier"]["name"]
-
-                if carrier not in carriers:
-                    carriers.append(carrier)
+    if trip_type == "round":
+        return_date = input("Enter return date (YYYY-MM-DD): ")
+        offers = search_flights(
+        departure,
+        arrival,
+        departure_date,
+        return_date,
+        passenger_count,
+        cabin_class
+    )
+    
+            
+        if offers:
+            cheapest_offers = sorted(
+            offers,
+            key=lambda offer: float(offer["total_amount"])
+            )[:5]
 
             print()
-            print(f"{number}. {' / '.join(carriers)}")
-            print(
-                f"Price: {offer['total_currency']} "
-                f"{offer['total_amount']}"
-            )
-            print(f"Route: {departure} → {arrival}")
-            print(f"Departure: {departure_time}")
-            print(f"Arrival: {arrival_time}")
-            print(f"Stops: {stops}")
-            print(f"Duration: {duration}")
-            
-    
-    average_speed = 500
-    flight_time = distance / average_speed
-    hours = int(flight_time)
-    minutes = round((flight_time - hours) * 60)
+            print("Top 5 cheapest flights:")
 
-    print("Estimated flight time:", hours, "hours", minutes, "minutes")
-    print("Distance:", round(distance), "miles")
+            for number, offer in enumerate(cheapest_offers, start=1):
+                print()
 
-    again = input("Would you like to search another flight? (yes/no): ").lower()
-    if again != "yes":
-        print("Thanks for using TravelFest")
+                print(f"{number}. {offer['owner']['name']}")
+                print(
+                    f"Total price: {offer['total_currency']} "
+                    f"{offer['total_amount']}"
+                )
+
+                for slice_number, flight_slice in enumerate(offer["slices"]):
+                    segments = flight_slice["segments"]
+                    first_segment = segments[0]
+                    last_segment = segments[-1]
+                    departure_time = first_segment["departing_at"].split("T")[1][:5]
+                    arrival_time = last_segment["arriving_at"].split("T")[1][:5]
+                    connections = len(segments) - 1
+
+                    if connections == 0:
+                        stops = "Nonstop"
+                    elif connections == 1:
+                        stops = "1 stop"
+                    else:
+                        stops = f"{connections} stops"
+
+                    duration = format_duration(flight_slice["duration"])
+
+                    if slice_number == 0:
+                        direction = "Outbound"
+                    else:
+                        direction = "Return"
+
+                    print()
+                    print(direction)
+                    print(
+                        first_segment["origin"]["iata_code"],
+                        "→",
+                        last_segment["destination"]["iata_code"]
+                    )
+                    print("Departure:", departure_time)
+                    print("Arrival:", arrival_time)
+                    print("Stops:", stops)
+                    print("Duration:", duration)
+
+                
+        
+        average_speed = 500
+        flight_time = distance / average_speed
+        hours = int(flight_time)
+        minutes = round((flight_time - hours) * 60)
+
+        print("Estimated flight time:", hours, "hours", minutes, "minutes")
+        print("Distance:", round(distance), "miles")
+
+        again = input("Would you like to search another flight? (yes/no): ").lower()
+        if again != "yes":
+            print("Thanks for using TravelFest")
         break
