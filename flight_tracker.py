@@ -37,6 +37,22 @@ def calculate_distance(lat1, lon1, lat2, lon2):
         c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
         return radius * c
+        
+def format_duration(duration):
+    duration = duration.replace("PT", "")
+
+    hours = 0
+    minutes = 0
+
+    if "H" in duration:
+        hours_part, duration = duration.split("H")
+        hours = int(hours_part)
+
+    if "M" in duration:
+        minutes = int(duration.replace("M", ""))
+
+    return f"{hours}h {minutes}m"
+
 while True:
     departure = input("Enter departure airport: ").upper()
     arrival = input("Enter arrival airport: ").upper()
@@ -79,14 +95,43 @@ while True:
         print("Top 5 cheapest flights:")
 
         for number, offer in enumerate(cheapest_offers, start=1):
+            flight_slice = offer["slices"][0]
+            segments = flight_slice["segments"]
+            first_segment = segments[0]
+            last_segment = segments[-1]
+            departure_time = first_segment["departing_at"].split("T")[1][:5]
+            arrival_time = last_segment["arriving_at"].split("T")[1][:5]
+            connections = len(segments) - 1
+
+            if connections == 0:
+                stops = "Nonstop"
+            elif connections == 1:
+                stops = "1 stop"
+            else:
+                stops = f"{connections} stops"
+
+            duration = format_duration(flight_slice["duration"])
+
+            carriers = []
+
+            for segment in segments:
+                carrier = segment["operating_carrier"]["name"]
+
+                if carrier not in carriers:
+                    carriers.append(carrier)
+
+            print()
+            print(f"{number}. {' / '.join(carriers)}")
             print(
-                number,
-                "-",
-                offer["owner"]["name"],
-                "-",
-                offer["total_currency"],
-                offer["total_amount"]
-    )
+                f"Price: {offer['total_currency']} "
+                f"{offer['total_amount']}"
+            )
+            print(f"Route: {departure} → {arrival}")
+            print(f"Departure: {departure_time}")
+            print(f"Arrival: {arrival_time}")
+            print(f"Stops: {stops}")
+            print(f"Duration: {duration}")
+            
     
     average_speed = 500
     flight_time = distance / average_speed
