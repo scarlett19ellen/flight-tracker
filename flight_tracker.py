@@ -102,38 +102,62 @@ while True:
         airports[arrival]["lat"],
         airports[arrival]["lon"],
         )
-    print("Distance:", round(distance), "miles"),
-    trip_type = input(
-        "One-way or round trip? (one-way/round): "
-        ).lower()
-    departure_date, departure_date_obj = get_valid_date(
-        "Enter departure date (YYYY-MM-DD): "
-        )
-    return_date = None
+        print("Distance:", round(distance), "miles"),
+        trip_type = input(
+            "One-way or round trip? (one-way/round): "
+            ).lower()
+        departure_date, departure_date_obj = get_valid_date(
+            "Enter departure date (YYYY-MM-DD): "
+            )
+        return_date = None
 
-  
-
-    if trip_type == "round":
-        return_date, return_date_obj = get_valid_date(
-            "Enter return date (YYYY-MM-DD): ",
-            departure_date_obj
-        )
-
-        passenger_count = int(input("How many passengers? "))
-
-        cabin_class = input(
-        "Cabin class (economy/premium_economy/business/first): "
-    ).lower()
-        offers = search_flights(
-        departure,
-        arrival,
-        departure_date,
-        return_date,
-        passenger_count,
-        cabin_class
-    )
     
-            
+
+        if trip_type == "round":
+            return_date, return_date_obj = get_valid_date(
+                "Enter return date (YYYY-MM-DD): ",
+                departure_date_obj
+            )
+
+        while True:
+            try:
+                passenger_count = int(input("How many passengers? "))
+
+                if passenger_count >= 1:
+                    break
+
+                print("Please enter at least 1 passenger.")
+
+            except ValueError:
+                print("Please enter a number.")
+
+        valid_cabins = [
+            "economy",
+            "premium_economy",
+            "business",
+            "first"
+        ]
+
+        while True:
+            cabin_class = input(
+                "Cabin class (economy/premium_economy/business/first): "
+            ).lower()
+
+            if cabin_class in valid_cabins:
+                break
+
+            print("Please enter a valid cabin class.")
+
+        offers = search_flights(
+            departure,
+            arrival,
+            departure_date,
+            return_date,
+            passenger_count,
+            cabin_class
+        )
+        
+                
         if offers:
             cheapest_offers = sorted(
             offers,
@@ -185,8 +209,6 @@ while True:
                     print("Arrival:", arrival_time)
                     print("Stops:", stops)
                     print("Duration:", duration)
-
-                
         
         average_speed = 500
         flight_time = distance / average_speed
@@ -199,4 +221,4 @@ while True:
         again = input("Would you like to search another flight? (yes/no): ").lower()
         if again != "yes":
             print("Thanks for using TravelFest")
-        break
+            break
