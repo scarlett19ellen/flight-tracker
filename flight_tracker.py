@@ -1,3 +1,4 @@
+from duffel_api import search_flights
 import math
 import csv
 print("This is TravelFest")
@@ -58,7 +59,33 @@ while True:
         airports[departure]["lat"],
         airports[departure]["lon"],
         airports[arrival]["lat"],
-        airports[arrival]["lon"]
+        airports[arrival]["lon"],
+        )
+    print("Distance:", round(distance), "miles"),
+    departure_date = input("Enter departure date (YYYY-MM-DD): ")
+    offers = search_flights(
+            departure,
+            arrival,
+            departure_date
+            )
+        
+    if offers:
+        cheapest_offers = sorted(
+        offers,
+        key=lambda offer: float(offer["total_amount"])
+        )[:5]
+
+        print()
+        print("Top 5 cheapest flights:")
+
+        for number, offer in enumerate(cheapest_offers, start=1):
+            print(
+                number,
+                "-",
+                offer["owner"]["name"],
+                "-",
+                offer["total_currency"],
+                offer["total_amount"]
     )
     
     average_speed = 500
