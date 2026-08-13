@@ -1,4 +1,5 @@
 from duffel_api import search_flights
+from datetime import datetime, date
 import math
 import csv
 print("This is TravelFest")
@@ -53,6 +54,30 @@ def format_duration(duration):
 
     return f"{hours}h {minutes}m"
 
+def get_valid_date(prompt, after_date=None):
+    while True:
+        date_text = input(prompt)
+
+        try:
+            entered_date = datetime.strptime(
+                date_text,
+                "%Y-%m-%d"
+            ).date()
+
+        except ValueError:
+            print("Please use YYYY-MM-DD.")
+            continue
+
+        if entered_date <= date.today():
+            print("Date must be in the future.")
+            continue
+
+        if after_date and entered_date <= after_date:
+            print("Return date must be after departure date.")
+            continue
+
+        return date_text, entered_date
+
 while True:
     departure = input("Enter departure airport: ").upper()
     arrival = input("Enter arrival airport: ").upper()
@@ -78,18 +103,27 @@ while True:
         airports[arrival]["lon"],
         )
     print("Distance:", round(distance), "miles"),
-    trip_type = input("One-way or round trip? (one-way/round): ").lower()
-    departure_date = input("Enter departure date (YYYY-MM-DD): ")
+    trip_type = input(
+        "One-way or round trip? (one-way/round): "
+        ).lower()
+    departure_date, departure_date_obj = get_valid_date(
+        "Enter departure date (YYYY-MM-DD): "
+        )
     return_date = None
 
-    passenger_count = int(input("How many passengers? "))
-
-    cabin_class = input(
-        "Cabin class (economy/premium_economy/business/first): "
-    ).lower()
+  
 
     if trip_type == "round":
-        return_date = input("Enter return date (YYYY-MM-DD): ")
+        return_date, return_date_obj = get_valid_date(
+            "Enter return date (YYYY-MM-DD): ",
+            departure_date_obj
+        )
+
+        passenger_count = int(input("How many passengers? "))
+
+        cabin_class = input(
+        "Cabin class (economy/premium_economy/business/first): "
+    ).lower()
         offers = search_flights(
         departure,
         arrival,
